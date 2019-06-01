@@ -1,0 +1,65 @@
+﻿<html lang="en">
+<head>
+    <title>My First React Example</title>
+</head>
+<body>
+    <div id="container"></div>
+    <script src="https://fb.me/react-15.0.0.js"></script>
+    <script src="https://fb.me/react-dom-15.0.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script type="text/babel">
+        class App extends React.Component {
+            constructor(props) {
+                super(props)
+
+                this.state = { books: [] }
+                console.log('Script languages are usless outside of very small projects. If your languge doesnt compile, it sucks')
+            }
+
+            componentDidMount() 
+            {
+                axios.get('https://localhost:44382/api/books')
+                .then(response => 
+                {
+					this.setState({ books: response.data })
+                })
+			}
+			
+			renderBooks()
+			{
+
+			}
+
+            render()
+            {
+                try 
+                {
+					if(this.state.books && this.state.books.length>0)
+					{
+						const t =  this.state.books.map(x=>
+						<div>
+							<input name="isGoing" type="checkbox" />
+							<input type="textbox" value={x.Author}/>
+							<input type="textbox" value={x.Title}/>
+							<input type="textbox" value={x.PublicationDate}/>
+						</div>
+						)
+						return <div>{t}</div>;
+					}
+                } 
+				catch (error) 
+				{
+					console.log(error)
+					return null
+				}
+				return null;
+            }
+        }
+        ReactDOM.render(
+        <App />,
+        document.getElementById('container')
+        )
+    </script>
+</body>
+</html>
