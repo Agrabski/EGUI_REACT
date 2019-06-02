@@ -1,6 +1,6 @@
 ﻿<html lang="en">
 <head>
-    <title>My First React Example</title>
+    <Title>My First React Example</Title>
 </head>
 <body>
     <div id="container"></div>
@@ -13,7 +13,14 @@
             constructor(props) {
                 super(props)
 
-                this.state = { books: [] }
+                this.state = { 
+					books: [],
+					filters: {
+						Author: '',
+						Title: '',
+						PublicationDate: ''
+					}
+				}
                 console.log('Script languages are usless outside of very small projects. If your languge doesnt compile, it sucks')
             }
 
@@ -22,36 +29,147 @@
                 axios.get('https://localhost:44382/api/books')
                 .then(response => 
                 {
-					this.setState({ books: response.data })
+					this.setState({ 
+						books: response.data.map(book => ({
+							Author: book.Author,
+							Title: book.Title,
+							PublicationDate: book.PublicationDate,
+							checked: false,
+						})),
+						filters: {
+							Author: '',
+							Title: '',
+							PublicationDate: ''
+						}
+					})
                 })
 			}
 			
 			renderBooks()
 			{
+				console.log('books')
+				try
+				{
+					if(this.state.books && this.state.books.length>0)
+					{
+						console.log(this.state.books);
+						const t =  this.state.books
+						.filter(b => {
+							console.log(b.Author.includes(this.state.filters.Author)
+								&& b.Title.includes(this.state.filters.Title)
+								&& b.PublicationDate.includes(this.state.filters.PublicationDate))
+							return b.Author.includes(this.state.filters.Author)
+								&& b.Title.includes(this.state.filters.Title)
+								&& b.PublicationDate.includes(this.state.filters.PublicationDate)
+						}).map(x=> {
+							return (
+							<div>
+								<input name="isGoing" type="checkbox" />
+								<input type="textbox" value={x.Author}/>
+								<input type="textbox" value={x.Title}/>
+								<input type="textbox" value={x.PublicationDate}/>
+							</div>
+							)
+						}
+						)
+						console.log(t)
+						return <div>{t}</div>;
+					}
+					
+				}
+				catch(e)
+				{
+					console.log(e)
+					return null
+				}
+				return null
+			}
 
+			renderFilter()
+			{
+				console.log('filter')
+				const t = (
+					<div>
+						<input
+						 	type="textbox"
+							value={this.state.filters.Author}
+							onChange=
+							{
+							(e)=>
+								{
+									let tmpState = this.state;
+									tmpState.filters.Author = e.target.value;
+									this.setState(tmpState);
+								}
+							}
+							
+						/>
+						<input
+						 	type="textbox"
+							value={this.state.filters.Title}
+							onChange=
+							{
+							(e)=>
+								{
+									let tmpState = this.state;
+									tmpState.filters.Title = e.target.value;
+									this.setState(tmpState);
+								}
+							}
+						/>
+						<input
+						 	type="textbox"
+							value={this.state.filters.PublicationDate}
+							onChange=
+							{
+							(e)=>
+								{
+									let tmpState = this.state;
+									tmpState.filters.PublicationDate = e.target.value;
+									this.setState(tmpState);
+								}
+							}
+						/>
+					</div>
+				)
+				console.log(t)
+				return t
+
+			}
+
+			renderButtons()
+			{
+				console.log('buttons')
+				const t = <div/>
+				return t
 			}
 
             render()
             {
                 try 
                 {
-					if(this.state.books && this.state.books.length>0)
+					const a = this.renderFilter()
+					const b = this.renderBooks()
+					const c = this.renderButtons()
+					if(a!= null && a!=undefined && b != null&&b!=undefined&&c != null&&c!=undefined)
 					{
-						const t =  this.state.books.map(x=>
+						console.log(a)
+						console.log(b)
+						console.log(c)
+						console.log('x')
+						return (
 						<div>
-							<input name="isGoing" type="checkbox" />
-							<input type="textbox" value={x.Author}/>
-							<input type="textbox" value={x.Title}/>
-							<input type="textbox" value={x.PublicationDate}/>
+						{a}
+						{b}
+						{c}
 						</div>
-						)
-						return <div>{t}</div>;
+						);
 					}
-                } 
+					return null
+				}
 				catch (error) 
 				{
-					console.log(error)
-					return null
+					return <div/>
 				}
 				return null;
             }

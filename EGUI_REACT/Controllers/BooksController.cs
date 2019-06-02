@@ -9,7 +9,16 @@ namespace EGUI_REACT.Controllers
 {
 	public class BooksController : ApiController
 	{
-		List<Book> _books = new List<Book>() { new Book() ,new Book()};
+		List<Book> _books = new List<Book>() { new Book()
+		{
+			Author="",
+			Title=""
+		}
+			,new Book()
+		{
+			Author="",
+			Title=""
+		}};
 		// GET api/values
 		public IEnumerable<Book> Get()
 		{
