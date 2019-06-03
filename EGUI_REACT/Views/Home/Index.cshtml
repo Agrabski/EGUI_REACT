@@ -44,15 +44,21 @@
 					})
                 })
 			}
+
+			put(book,index)
+			{
+				axios.put('https://localhost:44382/api/books/'+index,book).
+				then(r=>this.componentDidMount());
+			}
 			
 			renderBooks()
 			{
-				console.log('books')
 				try
 				{
 					if(this.state.books && this.state.books.length>0)
 					{
 						console.log(this.state.books);
+						let id = 0;
 						const t =  this.state.books
 						.filter(b => {
 							console.log(b.Author.includes(this.state.filters.Author)
@@ -62,17 +68,56 @@
 								&& b.Title.includes(this.state.filters.Title)
 								&& b.PublicationDate.includes(this.state.filters.PublicationDate)
 						}).map(x=> {
+							x.id = id
 							return (
-							<div>
-								<input name="isGoing" type="checkbox" />
-								<input type="textbox" value={x.Author}/>
-								<input type="textbox" value={x.Title}/>
-								<input type="textbox" value={x.PublicationDate}/>
+							<div id={id++}>
+								<input 
+								type="checkbox" 
+								value={x.checked}
+									onChange={
+										e=>
+										{
+											x.checked = e.target.value;
+										}
+									}
+								 />
+								<input 
+									type="textbox" 
+									value={x.Author}
+									onChange={
+										e=>
+										{
+											x.Author = e.target.value;
+											this.put(x,x.id);
+										}
+									}
+								/>
+								<input 
+									type="textbox" 
+									value={x.Title}
+									onChange={
+										e=>
+										{
+											x.Title = e.target.value;
+											this.put(x,x.id);
+										}
+									}
+								/>
+								<input 
+									type="textbox" 
+									value={x.PublicationDate}
+									onChange={
+										e=>
+										{
+											x.PublicationDate = e.target.value;
+											this.put(x,x.id);
+										}
+									}
+								/>
 							</div>
 							)
 						}
 						)
-						console.log(t)
 						return <div>{t}</div>;
 					}
 					
@@ -87,7 +132,6 @@
 
 			renderFilter()
 			{
-				console.log('filter')
 				const t = (
 					<div>
 						<input
@@ -132,15 +176,51 @@
 						/>
 					</div>
 				)
-				console.log(t)
 				return t
 
 			}
 
 			renderButtons()
 			{
-				console.log('buttons')
-				const t = <div/>
+				const t = (
+					<div>
+						<button
+						onClick={
+							e=>
+							{
+								axios.post('https://localhost:44382/api/books',
+								{
+									Author: '',
+									Title: '',
+									PublicationDate: '',
+								}).then(r=>this.componentDidMount());
+								console.log(tmpState);
+							}
+						}>add</button>
+						<button
+						onClick={
+							e=>
+							{
+								let tmpState = this.state;
+								const books = tmpState.books.filter(x=>x.checked);
+								console.log(books);
+								let promise = null;
+								books.sort(function(a, b){return b.id-a.id}).forEach(element => {
+									if(promise === null)
+									{
+										promise = axios.delete('https://localhost:44382/api/books/'+element.id)
+										console.log(1);
+									}
+									else
+									{
+										promise = promise.then(r=>axios.delete('https://localhost:44382/api/books/'+element.id));
+										console.log(2);
+									}
+								});
+								promise.then(x=>this.componentDidMount())
+							}
+						}>remove</button>
+					</div>)
 				return t
 			}
 
@@ -153,10 +233,6 @@
 					const c = this.renderButtons()
 					if(a!= null && a!=undefined && b != null&&b!=undefined&&c != null&&c!=undefined)
 					{
-						console.log(a)
-						console.log(b)
-						console.log(c)
-						console.log('x')
 						return (
 						<div>
 						{a}
